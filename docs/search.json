@@ -1,0 +1,23 @@
+[
+  {
+    "objectID": "forecast.html",
+    "href": "forecast.html",
+    "title": "Forecasting gas prices",
+    "section": "",
+    "text": "This notebook implements a forecast for US gas prices for the next 13 weeks (roughly one quarter), broken down by region. I am taking this as an opportunity to kick the tires on three new packages I’ve been excited to try out:\nI hope it also just demonstrates what I believe to be an effective way to wrangle data in Python, using Pandas method-chaining, altair plots, black to automatically cleanup after myself\nInteresting packages I am using (the rest are hidden)"
+  },
+  {
+    "objectID": "forecast.html#matrix-factorizations-are-fun",
+    "href": "forecast.html#matrix-factorizations-are-fun",
+    "title": "Forecasting gas prices",
+    "section": "Matrix factorizations are fun",
+    "text": "Matrix factorizations are fun\n\nwide = (\n    df_long.query(f\"week > '{complete_case_date}'\")[[\"week\", \"region\", \"price_change\"]]\n    .set_index(\"week\")\n    .pivot(columns=\"region\", values=\"price_change\")\n)\nmatrix = wide.values\nprint(matrix.shape)\nu, d, v = svd(matrix)\n\n\nscree_plot = (\n    pd.DataFrame({\"eigenvalue\": d, \"index\": np.arange(d.shape[0])})\n    .pipe(alt.Chart)\n    .encode(x=\"index\", y=\"eigenvalue\")\n    .mark_point()\n)\n\nlineapy.save(scree_plot, \"scree_plot\")\nscree_plot\n\n\ncomponents = pd.DataFrame(\n    v, columns=[f\"component_{i}\" for i in range(v.shape[0])], index=wide.columns\n).reset_index()\n\ncomponents_plot = (\n    components.pipe(alt.Chart)\n    .encode(x=\"component_0\", y=\"component_1\", text=\"region\")\n    .mark_text()\n    .interactive()\n)\n\nlineapy.save(components_plot, \"components_plot\")\ncomponents_plot"
+  },
+  {
+    "objectID": "forecast.html#acf-plots-are-price-changes-mean-reverting",
+    "href": "forecast.html#acf-plots-are-price-changes-mean-reverting",
+    "title": "Forecasting gas prices",
+    "section": "ACF plots: are price changes mean-reverting?",
+    "text": "ACF plots: are price changes mean-reverting?\nHere we check if changes in gas prices have any autocorrelation. If they do, it indicates there is some momentum: if prices are increasing they are likely to increase next week and we should fill up our tank as soon as possible. If there is no autocorrelation, there’s no real benefit to timing our gas purchases. If the autocorrelation is negative, we may want to wait awhile after prices increase to fill up.\nAnswer: looks like there’s strong positive autocorrelation lasting about 6 weeks.\n\nregion = \"U.S.\"\nauto_correlation = (\n    df_long.query(f\"region == '{region}'\")\n    .query(\"price_change == price_change\")[\"price_change\"]\n    .pipe(acf)\n)\nacf_plot = (\n    pd.DataFrame({\"rho\": auto_correlation, \"lag\": np.arange(auto_correlation.shape[0])})\n    .pipe(alt.Chart, title=region)\n    .encode(x=\"lag\", y=\"rho\")\n    .mark_bar()\n)\nlineapy.save(acf_plot, \"acf_plot2\")\nacf_plot"
+  }
+]
