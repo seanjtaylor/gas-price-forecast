@@ -8,9 +8,6 @@ This repository contains a Jupyter notebook which provides a forecast for US gas
 
 These packages have been used not only for their utility, but also for a hands-on exploration of their functionality.
 
-## Note
-I am an advisor for both Linea and Nixtla, and I believe in the quality and potential of their technology. Any feedback about these packages will be appreciated.
-
 ## Dependencies
 * Python
 * statsforecast
@@ -51,9 +48,6 @@ The `statsforecast` AutoARIMA implementation is used to forecast gas prices. As 
 
 ## Automation
 The notebook sets up a pipeline that can be scheduled to run regularly, allowing the forecast to be updated as new data comes in.
-
-## Contributing
-Contributions are always welcome. If you have any suggestions or feedback, feel free to open an issue or make a pull request.
 
 ## License
 MIT License. See [LICENSE](LICENSE) for more information.
